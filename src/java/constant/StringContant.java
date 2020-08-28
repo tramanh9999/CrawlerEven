@@ -19,4 +19,8 @@ public class StringContant {
     public static final String XEMPHIMSO_ITEM_CLASS_VALUE = "xpo-thumb";
     public static final String XEMPHIMSO_START_TAG_OF_MOVIE_INFO = "<section id=\"content\">";
     public static final String XEMPHIMSO_END_TAG_OF_MOVIE_INFO = "</section>";
+    public static final int DEFAULT_YEAR_IF_CANT_PARSE = 0;
+    public static final String XEMPHIMSO_START_TAG_MOVIE_CONTENT = "<div class=\"item-content\">";
+    public static final String XEMPHIMSO_END_TAG_OF_MOVIE_CONTENT = "</div>";
+    public static final String EMPTY_STRING = "";
 }
