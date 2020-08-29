@@ -18,7 +18,7 @@ public class DBUtilities {
         synchronized (LOCK) {
             if (emf == null) {
                 try {
-                    emf = Persistence.createEntityManagerFactory("TPGamingGearPU");
+                    emf = Persistence.createEntityManagerFactory("OscarJpa");
                 } catch (Exception e) {
                     Logger.getLogger(DBUtilities.class.getName()).log(Level.SEVERE, null, e);
                 }

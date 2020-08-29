@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/C:/Users/AnhTHT/Documents/NetBeansProjects/CrawllerEven/src/java/entities/TblCategory.java</file>
+            <file>file:/C:/Users/AnhTHT/Documents/NetBeansProjects/CrawllerEven/src/java/dao/BaseDao.java</file>
+            <file>file:/C:/Users/AnhTHT/Documents/NetBeansProjects/CrawllerEven/src/java/crawler/XemPhimSoDetailCrawler.java</file>
+            <file>file:/C:/Users/AnhTHT/Documents/NetBeansProjects/CrawllerEven/src/java/listener/MyContextServletListener.java</file>
+            <file>file:/C:/Users/AnhTHT/Documents/NetBeansProjects/CrawllerEven/src/java/crawler/BaseThread.java</file>
+            <file>file:/C:/Users/AnhTHT/Documents/NetBeansProjects/CrawllerEven/src/java/utilities/DBUtilities.java</file>
+            <file>file:/C:/Users/AnhTHT/Documents/NetBeansProjects/CrawllerEven/src/java/dao/IGenericDAO.java</file>
+        </group>
+    </open-files>
+</project-private>
