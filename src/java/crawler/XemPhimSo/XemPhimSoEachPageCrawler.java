@@ -1,27 +1,23 @@
-package crawler;
+package crawler.XemPhimSo;
 
 import checker.XmlSyntaxChecker;
-import constant.AppConstant;
 import constant.StringContant;
-import dao.ProductDao;
+import crawler.BaseCrawler;
+import threadCrawler.BaseThread;
 import entities.TblCategory;
-import entities.TblProduct;
 
 import javax.servlet.ServletContext;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
-import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

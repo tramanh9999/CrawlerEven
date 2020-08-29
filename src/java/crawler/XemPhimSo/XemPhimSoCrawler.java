@@ -1,7 +1,9 @@
-package crawler;
+package crawler.XemPhimSo;
 
 import checker.XmlSyntaxChecker;
 import constant.StringContant;
+import crawler.BaseCrawler;
+import threadCrawler.BaseThread;
 import entities.TblCategory;
 
 import javax.servlet.ServletContext;

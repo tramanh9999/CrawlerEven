@@ -1,7 +1,8 @@
-package crawler;
+package crawler.XemPhimPlus;
 
 import checker.XmlSyntaxChecker;
 import constant.StringContant;
+import crawler.BaseCrawler;
 
 import javax.servlet.ServletContext;
 import javax.xml.namespace.QName;
@@ -19,17 +20,17 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class XemPhimSoCategoriesCrawler extends BaseCrawler {
-    public XemPhimSoCategoriesCrawler(ServletContext context) {
+public class XemPhimPlusCategoriesCrawler extends BaseCrawler {
+    public XemPhimPlusCategoriesCrawler(ServletContext context) {
         super(context);
     }
 
-    public XemPhimSoCategoriesCrawler() {
+    public XemPhimPlusCategoriesCrawler() {
     }
 
     public static void main(String[] args) throws IOException {
-        XemPhimSoCategoriesCrawler x = new XemPhimSoCategoriesCrawler();
-        String xempURL = "https://xemphimsoz.com/";
+        XemPhimPlusCategoriesCrawler x = new XemPhimPlusCategoriesCrawler();
+        String xempURL = "https://xemphimplus.net/";
         Map<String, String> categories = x.getCategories(xempURL);
 
     }
@@ -40,27 +41,25 @@ public class XemPhimSoCategoriesCrawler extends BaseCrawler {
             String line = "";
             StringBuilder documentBd = new StringBuilder();
             boolean isStart = false;
-            boolean isFound = false;
             while ((line = reader.readLine()) != null) {
-                if (line.contains(StringContant.XEMPHIMSO_LI))
-                    isFound = true;
-                if (isFound && line.contains(StringContant.XEMPHIMSO_LI_ITEM))
+                if (line.contains(StringContant.XPPLUS_START_TAG_UL))
                     isStart = true;
                 if (isStart) {
                     documentBd.append(line.trim());
                 }
-                if (isStart && line.contains(StringContant.XEMPHIMSO_END_TAG_OF_CTGORY))
+                if (isStart && line.contains(StringContant.XPPLUS_STOP_TAG_UL))
                     break;
             }
-            return staxParserForCategories(documentBd.toString());
+            System.out.printf(documentBd.toString());
+             staxParserForCategories(documentBd.toString());
         } catch (XMLStreamException e) {
-            Logger.getLogger(XemPhimSoCategoriesCrawler.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(XemPhimPlusCategoriesCrawler.class.getName()).log(Level.SEVERE, null, e);
         } finally {
             try {
                 if (reader != null)
                     reader.close();
             } catch (IOException ex) {
-                Logger.getLogger(XemPhimSoCategoriesCrawler.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(XemPhimPlusCategoriesCrawler.class.getName()).log(Level.SEVERE, null, ex);
             }
 
         }
@@ -69,33 +68,37 @@ public class XemPhimSoCategoriesCrawler extends BaseCrawler {
     }
 
     public Map<String, String> staxParserForCategories(String src) throws UnsupportedEncodingException, XMLStreamException {
-        XmlSyntaxChecker xmlSyntaxChecker= new XmlSyntaxChecker();
-        String refinedDoc = xmlSyntaxChecker.wellformingToXML(src);
-        refinedDoc="<ul>"+refinedDoc+"</ul>";
-        XMLEventReader eventReader = parseStringToXMLEventReader(refinedDoc);
+        XmlSyntaxChecker xmlSyntaxChecker = new XmlSyntaxChecker();
+//        String refinedDoc = xmlSyntaxChecker.wellformingToXML(src);
+        XMLEventReader eventReader = parseStringToXMLEventReader(src);
         Map<String, String> categories = new HashMap<>();
         String link = "";
         while (eventReader.hasNext()) {
             Object next = eventReader.next();
-            XMLEvent event = null;
-            try{
-                event = (XMLEvent) next;
-            }catch (Exception e){
-                e.printStackTrace();
-            }
+            XMLEvent event = (XMLEvent) next;
             if (event.isStartElement()) {
                 StartElement startElement = event.asStartElement();
                 String tagName = startElement.getName().getLocalPart();
-                if (StringContant.XEMPHIMSO_START_TAG_OF_CTE.equals(tagName)) {
-                    Attribute attrHref = startElement.getAttributeByName(
+                if (StringContant.XPPLUS_START_TAG_CTE.equals(tagName)) {
+                    Attribute linkAttr = startElement.getAttributeByName(
                             new QName("href"));
-                    link = attrHref.getValue();
+                    link = linkAttr.getValue();
+//next to get data
                     event = (XMLEvent) eventReader.next();
                     Characters character = event.asCharacters();
                     categories.put(link, character.getData());
                 }
             }
         }
+        System.out.println(categories);
         return categories;
     }
+
+
+    public void categoryCrawler(){
+        //cal func
+
+
+    }
+
 }

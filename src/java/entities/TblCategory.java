@@ -7,55 +7,23 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.Objects;
 
-@Entity
-@Table(name = "Tbl_Category", catalog = "OscarJpa", schema = "dbo")
-@NamedQueries({@NamedQuery(name = "Tbl_Category.findAll", query = "SELECT t FROM TblCategory t")})
-@XmlRootElement(name = "Category", namespace = "www.category.vn")
 public class TblCategory implements Serializable {
-    @Override
-    public String toString() {
-        return "TblCategory{" +
-                "categoryId='" + categoryId + '\'' +
-                ", categoryName='" + categoryName + '\'' +
-                '}';
+
+
+    public TblCategory(int id, String categoryName, String categoryUrl) {
+        this.id = id;
+        this.categoryName = categoryName;
+        this.categoryUrl = categoryUrl;
     }
 
-    private static final long serialVersionUID = 1L;
+    private int id;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        TblCategory category = (TblCategory) o;
-        return Objects.equals(categoryId, category.categoryId) &&
-                Objects.equals(categoryName, category.categoryName);
+    public int getId() {
+        return id;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(categoryId, categoryName);
-    }
-
-    @Id
-    @Basic(optional = false)
-    @Column(name = "CategoryId", nullable = false, length = 200)
-    @XmlAttribute(name = "CategoryId", required = true)
-    private String categoryId;
-
-    @Column(name = "CategoryName", length = 250)
-    @XmlElement(name = "CategoryName", required = true, namespace = "www.category.vn")
-    private String categoryName;
-
-
-    public TblCategory() {
-    }
-
-    public String getCategoryId() {
-        return categoryId;
-    }
-
-    public void setCategoryId(String categoryId) {
-        this.categoryId = categoryId;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getCategoryName() {
@@ -64,5 +32,20 @@ public class TblCategory implements Serializable {
 
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
+    }
+
+    public String getCategoryUrl() {
+        return categoryUrl;
+    }
+
+    public void setCategoryUrl(String categoryUrl) {
+        this.categoryUrl = categoryUrl;
+    }
+
+    private String categoryName;
+
+    private String categoryUrl;
+
+    public TblCategory() {
     }
 }

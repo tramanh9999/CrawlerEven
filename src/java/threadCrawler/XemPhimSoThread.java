@@ -1,7 +1,8 @@
 package threadCrawler;
 
 import constant.AppConstant;
-import crawler.*;
+import crawler.XemPhimSo.XemPhimSoCategoriesCrawler;
+import crawler.XemPhimSo.XemPhimSoCrawler;
 
 import javax.servlet.ServletContext;
 import java.io.IOException;

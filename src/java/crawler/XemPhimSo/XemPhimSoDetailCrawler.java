@@ -1,7 +1,9 @@
-package crawler;
+package crawler.XemPhimSo;
 
 import checker.XmlSyntaxChecker;
 import constant.StringContant;
+import crawler.BaseCrawler;
+import threadCrawler.BaseThread;
 import entities.TblMovie;
 import utilities.VNCharacterUtils;
 
@@ -19,7 +21,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-@Xml
 public class XemPhimSoDetailCrawler extends BaseCrawler implements Runnable {
 
     private String url;

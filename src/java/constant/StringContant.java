@@ -23,4 +23,8 @@ public class StringContant {
     public static final String XEMPHIMSO_START_TAG_MOVIE_CONTENT = "<div class=\"item-content\">";
     public static final String XEMPHIMSO_END_TAG_OF_MOVIE_CONTENT = "</div>";
     public static final String EMPTY_STRING = "";
+    public static final String XPPLUS_START_TAG_UL = "<ul role=\"menu\" class=\" dropdown-menu\"";
+    public static final String XPPLUS_STOP_TAG_UL = "</ul>";
+    public static final String XPPLUS_START_TAG_CTE = "a";
+    public static final String BASE_PATH_XML = "web/output/";
 }
