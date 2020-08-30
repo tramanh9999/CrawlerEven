@@ -3,11 +3,13 @@ package crawler.XemPhimSo;
 import checker.XmlSyntaxChecker;
 import constant.StringContant;
 import crawler.BaseCrawler;
+import dao.XMLMovieDAO;
 import threadCrawler.BaseThread;
-import entities.TblMovie;
+import entities.Movie;
 import utilities.VNCharacterUtils;
 
 import javax.servlet.ServletContext;
+import javax.xml.bind.ValidationException;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
@@ -21,12 +23,13 @@ import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 public class XemPhimSoDetailCrawler extends BaseCrawler implements Runnable {
 
     private String url;
-    private TblMovie movie;
+    private Movie movie;
 
-    public XemPhimSoDetailCrawler(ServletContext context, String url, TblMovie movie) {
+    public XemPhimSoDetailCrawler(ServletContext context, String url, Movie movie) {
         super(context);
         this.url = url;
         this.movie = movie;
@@ -53,7 +56,6 @@ public class XemPhimSoDetailCrawler extends BaseCrawler implements Runnable {
             boolean isFoundMovieContent = false;
             boolean isStopGetMovieContent = false;
             while ((line = reader.readLine()) != null) {
-//                System.out.println(line);
                 if (line.contains(StringContant.XEMPHIMSO_START_TAG_OF_MOVIE_INFO)) {
                     isStart = true;
                 }
@@ -81,35 +83,62 @@ public class XemPhimSoDetailCrawler extends BaseCrawler implements Runnable {
                     }
                 }
             } catch (InterruptedException ex) {
-                Logger.getLogger(AzaudioCrawler.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(XemPhimSoDetailCrawler.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-            TblMovie movie = stAXparserForDetailMovie(documentBd.toString());
-            //TODO get content of film
-            movie.setIntroduction(movieContent.toString());
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(XemPhimSoEachPageCrawler.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(XemPhimSoEachPageCrawler.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (XMLStreamException e) {
-            Logger.getLogger(XemPhimSoEachPageCrawler.class.getName()).log(Level.SEVERE, null, e);
-        }
+            Optional<Movie> movieOpt = stAXparserForDetailMovie(documentBd.toString());
 
+
+            if(movieOpt.isPresent()){
+
+
+                Movie parseMovie = movieOpt.get();
+                System.out.printf("Crawled %s%n ", parseMovie.getTitle1());
+                parseMovie.setIntroduction(movieContent.toString());
+                XMLMovieDAO.getInstance().writeXMLMoviesToFile(parseMovie);
+            }
+
+
+
+            try {
+                synchronized (BaseThread.getInstance()) {
+                    while (BaseThread.isSuspended()) {
+                        BaseThread.getInstance().wait();
+                    }
+                }
+            } catch (InterruptedException ex) {
+                Logger.getLogger(XemPhimSoDetailCrawler.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+
+            //TODO get content of film
+        } catch (IOException ex) {
+            System.out.printf("Get URL failed %s%n", url);
+        } catch (XMLStreamException ex) {
+            Logger.getLogger(XemPhimSoDetailCrawler.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+        } catch (ValidationException ex) {
+            Logger.getLogger(XemPhimSoDetailCrawler.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+        }
     }
 
 
-    private TblMovie stAXparserForDetailMovie(String document) throws XMLStreamException, UnsupportedEncodingException, XMLStreamException {
+    private Optional<Movie> stAXparserForDetailMovie(String document) throws UnsupportedEncodingException, XMLStreamException {
         String refinedDocument = new XmlSyntaxChecker().wellformingToXML(document);
         refinedDocument = refinedDocument.trim();
+        if(refinedDocument.isBlank()){
+            return Optional.empty();
+        }
         XMLEventReader eventReader = parseStringToXMLEventReader(refinedDocument);
-        Map<String, String> detailLinkMap = new HashMap<>();
-        TblMovie movie = new TblMovie();
-        List<Integer> categoryIds = new ArrayList<>();
-        List<Integer> actorIds = new ArrayList<>();
-
+        Movie movie = new Movie();
         boolean isFoundLink = false;
         while (eventReader.hasNext()) {
-            XMLEvent event = (XMLEvent) eventReader.next();
+            XMLEvent event;
+            try {
+                event = (XMLEvent) eventReader.next();
+            } catch (Exception e) {
+                Logger.getLogger(XemPhimSoDetailCrawler.class.getName()).log(Level.SEVERE, "", e );
+                return Optional.empty();
+            }
             if (event.isStartElement()) {
                 //first found image , then set flag = true
                 StartElement startElement = event.asStartElement();
@@ -215,12 +244,10 @@ public class XemPhimSoDetailCrawler extends BaseCrawler implements Runnable {
                                         StartElement ctelinkElement = categoryLinkEle.asStartElement();
                                         boolean isTagCategoryLink = "a".equals(ctelinkElement.getName().getLocalPart());
                                         if (isTagCategoryLink) {
-                                            StartElement categoryLinkElement = ctelinkElement.asStartElement();
-                                            Attribute linkAttr = categoryLinkElement.getAttributeByName(new QName("href"));
+                                            Attribute linkAttr = ctelinkElement.getAttributeByName(new QName("href"));
                                             //find by link to get id, set in somewhere to add into relation table
                                             if (Objects.nonNull(linkAttr)) {
                                                 String cte = linkAttr.getValue();
-                                                System.out.println("cte: " + cte);
                                                 //int cteId= tblCategory.findByLink();
                                                 //categoryIds.add(cteId);
                                             }
@@ -253,7 +280,6 @@ public class XemPhimSoDetailCrawler extends BaseCrawler implements Runnable {
                                             //find by link to get id, set in somewhere to add into relation table
                                             if (Objects.nonNull(linkAttr)) {
                                                 String link = linkAttr.getValue();
-                                                System.out.println("actor:" + link);
                                                 //int cteId= tblActor.findByLink(link);
                                                 //if cteId== 0 -> insert new dien vien -else- actorIds.add(cteId);
                                             }
@@ -289,12 +315,10 @@ public class XemPhimSoDetailCrawler extends BaseCrawler implements Runnable {
                                         StartElement directorElement = director.asStartElement();
                                         boolean isTagDirectorLink = "a".equals(directorElement.getName().getLocalPart());
                                         if (isTagDirectorLink) {
-                                            StartElement directorLink = directorElement.asStartElement();
-                                            Attribute linkAttr = directorLink.getAttributeByName(new QName("href"));
+                                            Attribute linkAttr = directorElement.getAttributeByName(new QName("href"));
                                             //find by link to get id, set in somewhere to add into relation table
                                             if (Objects.nonNull(linkAttr)) {
                                                 String link = linkAttr.getValue();
-                                                System.out.println("direct: " + link);
                                                 //int cteId= tblDirector.findByLink(link);
                                                 //if cteId== 0 -> insert new dien vien -else- directorIds.add(cteId);
                                             }
@@ -305,16 +329,19 @@ public class XemPhimSoDetailCrawler extends BaseCrawler implements Runnable {
                             case "nam phat hanh":
                                 eventReader.next();//to end tag </span>
                                 eventReader.next();//to ":   "
-                                XMLEvent publishYearEvent = (XMLEvent) eventReader.next(); // to the publist year tag
-                                StartElement yearElement = publishYearEvent.asStartElement();
-                                Attribute yearAttribute = yearElement.getAttributeByName(new QName("title"));
-                                String yeatrStr = Objects.nonNull(yearAttribute) ? yearAttribute.getValue() : StringContant.EMPTY_STRING;
-                                try {
-                                    int year = Integer.parseInt(yeatrStr);
-                                    movie.setPublishYear(year);
-                                    continue;
-                                } catch (NumberFormatException e) {
-                                    movie.setPublishYear(StringContant.DEFAULT_YEAR_IF_CANT_PARSE);
+                                XMLEvent publishYearEvent = (XMLEvent) eventReader.next();
+                                // to the publist year tag
+                                if (publishYearEvent.isStartElement()) {
+                                    StartElement yearElement = publishYearEvent.asStartElement();
+                                    Attribute yearAttribute = yearElement.getAttributeByName(new QName("title"));
+                                    String yeatrStr = Objects.nonNull(yearAttribute) ? yearAttribute.getValue() : StringContant.EMPTY_STRING;
+                                    try {
+                                        int year = Integer.parseInt(yeatrStr);
+                                        movie.setPublishYear(year);
+                                        continue;
+                                    } catch (NumberFormatException e) {
+                                        movie.setPublishYear(StringContant.DEFAULT_YEAR_IF_CANT_PARSE);
+                                    }
                                 }
                                 break;
                             default:
@@ -325,18 +352,9 @@ public class XemPhimSoDetailCrawler extends BaseCrawler implements Runnable {
                         }
                     }
                 }
-            } else if (event.isEndElement()) {
-                if ("section".equals(event.asEndElement().getName().getLocalPart())) {
-                    System.out.println(movie);
-                    //TODO save movie
-                    //get id , save relation with
-                    //save raltion cte + movie
-                    //save raltion actor + movie
-                    //save raltion diẻcor+ movie
-                }
             }
         }
-        return movie;
+        return Optional.of(movie);
     }
 }
 

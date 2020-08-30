@@ -5,6 +5,7 @@ import constant.StringContant;
 import crawler.BaseCrawler;
 
 import javax.servlet.ServletContext;
+import javax.xml.bind.ValidationException;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
@@ -20,48 +21,34 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class XemPhimSoCategoriesCrawler extends BaseCrawler {
-    public XemPhimSoCategoriesCrawler(ServletContext context) {
+public class XemPhimSoCategoryLinkPageCrawler extends BaseCrawler {
+    public XemPhimSoCategoryLinkPageCrawler(ServletContext context) {
         super(context);
     }
 
-    public XemPhimSoCategoriesCrawler() {
+    public XemPhimSoCategoryLinkPageCrawler() {
     }
 
-    public static void main(String[] args) throws IOException {
-        XemPhimSoCategoriesCrawler x = new XemPhimSoCategoriesCrawler();
+    public static void main(String[] args) throws IOException, ValidationException {
+        XemPhimSoCategoryLinkPageCrawler x = new XemPhimSoCategoryLinkPageCrawler();
         String xempURL = "https://xemphimsoz.com/";
         Map<String, String> categories = x.getCategories(xempURL);
-
     }
 
-    public Map<String, String> getCategories(String url) throws IOException {
+    public Map<String, String> getCategories(String url) throws IOException, ValidationException {
         BufferedReader reader = getBufferedReaderForURL(url);
+        String document;
         try {
-            String line = "";
-            StringBuilder documentBd = new StringBuilder();
-            boolean isStart = false;
-            boolean isFound = false;
-            while ((line = reader.readLine()) != null) {
-                if (line.contains(StringContant.XEMPHIMSO_LI))
-                    isFound = true;
-                if (isFound && line.contains(StringContant.XEMPHIMSO_LI_ITEM))
-                    isStart = true;
-                if (isStart) {
-                    documentBd.append(line.trim());
-                }
-                if (isStart && line.contains(StringContant.XEMPHIMSO_END_TAG_OF_CTGORY))
-                    break;
-            }
-            return staxParserForCategories(documentBd.toString());
+            document = getCategoryPageLink(reader);
+            return staxParserForCategories(document);
         } catch (XMLStreamException e) {
-            Logger.getLogger(XemPhimSoCategoriesCrawler.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(XemPhimSoCategoryLinkPageCrawler.class.getName()).log(Level.SEVERE, null, e);
         } finally {
             try {
                 if (reader != null)
                     reader.close();
             } catch (IOException ex) {
-                Logger.getLogger(XemPhimSoCategoriesCrawler.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(XemPhimSoCategoryLinkPageCrawler.class.getName()).log(Level.SEVERE, null, ex);
             }
 
         }
@@ -69,19 +56,38 @@ public class XemPhimSoCategoriesCrawler extends BaseCrawler {
         return null;
     }
 
+    private String getCategoryPageLink(BufferedReader reader) throws IOException {
+        String line = "";
+        StringBuilder documentBd = new StringBuilder();
+        boolean isStart = false;
+        boolean isFound = false;
+        while ((line = reader.readLine()) != null) {
+            if (line.contains(StringContant.XEMPHIMSO_LI))
+                isFound = true;
+            if (isFound && line.contains(StringContant.XEMPHIMSO_LI_ITEM))
+                isStart = true;
+            if (isStart) {
+                documentBd.append(line.trim());
+            }
+            if (isStart && line.contains(StringContant.XEMPHIMSO_END_TAG_OF_CTGORY))
+                break;
+        }
+        return documentBd.toString();
+    }
+
     public Map<String, String> staxParserForCategories(String src) throws UnsupportedEncodingException, XMLStreamException {
-        XmlSyntaxChecker xmlSyntaxChecker= new XmlSyntaxChecker();
+        XmlSyntaxChecker xmlSyntaxChecker = new XmlSyntaxChecker();
         String refinedDoc = xmlSyntaxChecker.wellformingToXML(src);
-        refinedDoc="<ul>"+refinedDoc+"</ul>";
+        refinedDoc = "<ul>" + refinedDoc + "</ul>";
         XMLEventReader eventReader = parseStringToXMLEventReader(refinedDoc);
         Map<String, String> categories = new HashMap<>();
         String link = "";
         while (eventReader.hasNext()) {
             Object next = eventReader.next();
             XMLEvent event = null;
-            try{
+            try {
                 event = (XMLEvent) next;
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             if (event.isStartElement()) {

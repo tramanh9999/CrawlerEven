@@ -1,14 +1,13 @@
 package crawler;
 
 import javax.servlet.ServletContext;
+import javax.xml.bind.ValidationException;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import java.io.*;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.charset.StandardCharsets;
 
 public class BaseCrawler {
     private ServletContext context;
@@ -24,8 +23,12 @@ public class BaseCrawler {
         return context;
     }
 
-    protected BufferedReader getBufferedReaderForURL(String urlString) throws IOException {
+    protected BufferedReader getBufferedReaderForURL(String urlString) throws IOException, ValidationException {
+        if ('/' != urlString.charAt(urlString.length() - 1)) {
+            urlString += "/";
+        }
         URL url = new URL(urlString);
+
         URLConnection connection = url.openConnection();
         connection.addRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0 ; Win64x; x64)");
         InputStream is = connection.getInputStream();

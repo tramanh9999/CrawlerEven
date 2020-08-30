@@ -27,4 +27,8 @@ public class StringContant {
     public static final String XPPLUS_STOP_TAG_UL = "</ul>";
     public static final String XPPLUS_START_TAG_CTE = "a";
     public static final String BASE_PATH_XML = "web/output/";
+    public static final String OUTPUT_CATEGORY_XML_PATH = "web/outputXML/category.xml";
+    public static final String DTO_CATEGORY_PATH = "web/outputXML/category.dtd";
+    public static final String MOVIE_DTD_PATH = "web/outputXML/movie.dtd";
+    public static final String MOVIE_XML_PATH = "web/outputXML/movie.xml";
 }

@@ -5,6 +5,7 @@ import constant.StringContant;
 import crawler.BaseCrawler;
 
 import javax.servlet.ServletContext;
+import javax.xml.bind.ValidationException;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
@@ -28,14 +29,14 @@ public class XemPhimPlusCategoriesCrawler extends BaseCrawler {
     public XemPhimPlusCategoriesCrawler() {
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ValidationException {
         XemPhimPlusCategoriesCrawler x = new XemPhimPlusCategoriesCrawler();
         String xempURL = "https://xemphimplus.net/";
         Map<String, String> categories = x.getCategories(xempURL);
 
     }
 
-    public Map<String, String> getCategories(String url) throws IOException {
+    public Map<String, String> getCategories(String url) throws IOException, ValidationException {
         BufferedReader reader = getBufferedReaderForURL(url);
         try {
             String line = "";
@@ -50,7 +51,6 @@ public class XemPhimPlusCategoriesCrawler extends BaseCrawler {
                 if (isStart && line.contains(StringContant.XPPLUS_STOP_TAG_UL))
                     break;
             }
-            System.out.printf(documentBd.toString());
              staxParserForCategories(documentBd.toString());
         } catch (XMLStreamException e) {
             Logger.getLogger(XemPhimPlusCategoriesCrawler.class.getName()).log(Level.SEVERE, null, e);
@@ -90,7 +90,6 @@ public class XemPhimPlusCategoriesCrawler extends BaseCrawler {
                 }
             }
         }
-        System.out.println(categories);
         return categories;
     }
 

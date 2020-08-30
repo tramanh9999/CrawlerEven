@@ -5,15 +5,15 @@ package utilities;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+import javax.xml.bind.ValidationException;
 import javax.xml.parsers.*;
 
 import constant.StringContant;
-import entities.TblCategory;
 import error.ErrorHandlerWriter;
 import org.xml.sax.*;
 import java.io.File;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
@@ -32,9 +32,8 @@ import org.w3c.dom.Element;
 
 public class XMLUtilities {
 
-    public boolean validationWithDTD(String filePath) {
+    public static boolean validationWithDTD(String filePath) {
         try {
-
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setValidating(true);
             DocumentBuilder builder = factory.newDocumentBuilder();
@@ -43,15 +42,25 @@ public class XMLUtilities {
 
             System.out.println("Validation success, start importing to Database...\n");
             return true;
-
         } catch (Throwable e) {
             System.out.println("Validation failed");
             return false;
         }
     }
 
+    public static void main(String[] args) throws ValidationException {
+        Map<String, String> srawls= new HashMap<>();
+        createXMLwithDOMandDTD(srawls,"web/outputXML/testdtd.xml","web/outputXML/category.dtd" );
+        boolean b = validationWithDTD("web/outputXML/testdtd.xml");
+        if(!b){
+            throw new ValidationException("Hello con cho");
+        }
 
-    public void createXMLwithDOMandDTD(Map<String, String> crawlPageCategories,
+
+    }
+
+
+    public static void createXMLwithDOMandDTD(Map<String, String> crawlPageCategories,
                                        String outputFilePath, String dtdPath) {
         try {
             DocumentBuilderFactory dbFactory

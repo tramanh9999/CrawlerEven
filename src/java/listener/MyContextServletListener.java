@@ -5,10 +5,19 @@
  */
 package listener;
 
+import threadCrawler.XemPhimSoThread;
+
 /**
  *
  * @author AnhTHT
  */
 public class MyContextServletListener {
     private static String realPath="";
+
+    private static XemPhimSoThread xemPhimSoThread= new XemPhimSoThread(null);
+
+    public static void main(String[] args) {
+        //statrt thread
+        xemPhimSoThread.start();
+    }
 }

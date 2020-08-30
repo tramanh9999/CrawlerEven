@@ -8,6 +8,8 @@ package dao;
 import utilities.DBUtilities;
 
 import javax.persistence.EntityManager;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
@@ -29,7 +31,7 @@ public class BaseDao<T, PK extends Serializable> implements IGenericDAO<T, PK>{
     }
 
     @Override
-    public T create(T t) {
+    public T create(T t) throws ParserConfigurationException, TransformerException {
         return null;
     }
 

@@ -5,13 +5,15 @@
  */
 package dao;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 import java.util.List;
 
 /**
  * @author AnhTHT
  */
 public interface IGenericDAO<T, PK> {
-    T create(T t);
+    T create(T t) throws ParserConfigurationException, TransformerException;
 
     T findByID(PK pk);
 

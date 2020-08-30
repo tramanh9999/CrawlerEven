@@ -1,15 +1,15 @@
 package dao;
-public class CategoryDAO {
-    public CategoryDAO() {
+public class MovieDAO {
+    public MovieDAO() {
     }
 
-    private static CategoryDAO instance;
+    private static MovieDAO instance;
     private final static Object LOCK = new Object();
 
-    public static CategoryDAO getInstance() {
+    public static MovieDAO getInstance() {
         synchronized (LOCK) {
             if (instance == null) {
-                instance = new CategoryDAO();
+                instance = new MovieDAO();
             }
         }
         return instance;

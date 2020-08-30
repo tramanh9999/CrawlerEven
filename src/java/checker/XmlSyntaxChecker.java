@@ -21,6 +21,8 @@ public class XmlSyntaxChecker {
     private Character quote;
 
     public  String wellformingToXML(String src) {
+
+        src = refineHtml(src);
         src = src + " ";
         char[] reader = src.toCharArray();
         StringBuilder writer = new StringBuilder();

@@ -1,0 +1,14 @@
+<?xml encoding="UTF-8"?>
+        <!ELEMENT movie (title1*,title2*,subTitle*,audio*,imdb*,vote*,publishYear*,
+                country*,introduction*,duration*)>
+        <!ELEMENT title1 (#PCDATA)>
+        <!ELEMENT title2 (#PCDATA)>
+        <!ELEMENT subTitle (#PCDATA)>
+        <!ELEMENT audio (#PCDATA)>
+        <!ELEMENT imdb (#PCDATA)>
+        <!ELEMENT vote (#PCDATA)>
+        <!ELEMENT publishYear (#PCDATA)>
+        <!ELEMENT country (#PCDATA)>
+        <!ELEMENT introduction (#PCDATA)>
+        <!ELEMENT duration (#PCDATA)>
+

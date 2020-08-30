@@ -1,16 +1,11 @@
 package entities;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
-import java.util.Objects;
 
-public class TblCategory implements Serializable {
+public class Category implements Serializable {
 
 
-    public TblCategory(int id, String categoryName, String categoryUrl) {
+    public Category(int id, String categoryName, String categoryUrl) {
         this.id = id;
         this.categoryName = categoryName;
         this.categoryUrl = categoryUrl;
@@ -46,6 +41,6 @@ public class TblCategory implements Serializable {
 
     private String categoryUrl;
 
-    public TblCategory() {
+    public Category() {
     }
 }
